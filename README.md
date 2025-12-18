@@ -24,6 +24,8 @@
 | **🌐 Browser Integration** | Clip research, articles, and documentation from Chrome. | ✅ Ready |
 | **🛡️ Watermarking** | Ensures no data is duplicated, even across restarts. | ✅ Ready |
 | **🐳 Docker Ready** | Fully containerized for easy deployment anywhere. | ✅ Ready |
+| **💻 CLI Tool** | Pipe terminal output and quick notes directly to memory. | ✅ Ready |
+| **🔌 Webhooks** | Connect project management tools like Linear. | ✅ Ready |
 
 ---
 
