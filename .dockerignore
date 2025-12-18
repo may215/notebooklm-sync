@@ -1,0 +1,5 @@
+node_modules
+notebooklm_output
+.git
+.DS_Store
+tests

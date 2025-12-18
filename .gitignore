@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# OS specific checks
+.DS_Store
+Thumbs.db
+
+# Project Output
+notebooklm_output/
+*.log
+
+# Environment Variables
+.env
+
+# Testing
+coverage/
+
+# VS Code Extension
+apps/vscode-extension/out/
+apps/vscode-extension/.vscode-test/
+
+# Editor directories
+.vscode/
+.idea/

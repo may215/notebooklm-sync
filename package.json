@@ -1,0 +1,11 @@
+{
+  "name": "notebooklm-sync",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node apps/api/src/index.js",
+    "test": "node tests/integration.js",
+    "build": "echo 'no build step needed'"
+  }
+}

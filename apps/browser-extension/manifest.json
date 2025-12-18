@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "NotebookLM Sync",
+    "version": "1.0",
+    "description": "Send selected text to your NotebookLM Sync local server",
+    "permissions": [
+        "contextMenus",
+        "activeTab",
+        "scripting"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    }
+}

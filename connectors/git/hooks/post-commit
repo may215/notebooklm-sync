@@ -1,0 +1,16 @@
+#!/bin/sh
+# Git post-commit hook to send commit metadata to the notebooklm-sync API.
+# Change PROJECT_ID and USER_ID as needed, or export them in your environment.
+
+PROJECT_ID="${NLS_PROJECT_ID:-demo}"
+USER_ID="${NLS_USER_ID:-git}"
+BASE_URL="${NLS_BASE_URL:-http://localhost:8787}"
+
+# Extract the commit message and branch name
+COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\n')
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+TIMESTAMP=$(date +%s000)
+
+curl -s -X POST "$BASE_URL/v1/events" \
+  -H "content-type: application/json" \
+  -d "{\n    \"userId\": \"$USER_ID\",\n    \"projectId\": \"$PROJECT_ID\",\n    \"source\": \"git\",\n    \"eventType\": \"commit\",\n    \"timestamp\": $TIMESTAMP,\n    \"payload\": {\n      \"branch\": \"$BRANCH\",\n      \"message\": \"$COMMIT_MSG\"\n    }\n  }" >/dev/null || true

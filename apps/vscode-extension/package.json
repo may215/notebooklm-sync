@@ -1,0 +1,32 @@
+{
+    "name": "notebooklm-vscode",
+    "displayName": "NotebookLM Sync",
+    "description": "Send selected code to NotebookLM Sync API",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.90.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./src/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "notebooklm-vscode.saveSelection",
+                "title": "NotebookLM: Save Selection"
+            }
+        ]
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "node ./test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.90.0",
+        "@types/node": "20.x",
+        "eslint": "^8.57.0"
+    }
+}
