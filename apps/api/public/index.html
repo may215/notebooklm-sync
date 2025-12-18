@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotebookLM Sync Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <style>
+        body { padding: 2rem; max-width: 800px; margin: 0 auto; }
+        header { border-bottom: 1px solid var(--pico-muted-border-color); margin-bottom: 2rem; padding-bottom: 1rem; }
+        .stat-card { text-align: center; padding: 1rem; background: var(--pico-card-background-color); border-radius: var(--pico-border-radius); box-shadow: var(--pico-card-box-shadow); }
+        .stat-val { font-size: 2.5rem; font-weight: bold; color: var(--pico-primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <hgroup>
+            <h1>🧠 NotebookLM Sync</h1>
+            <p>Local Incremental Memory Stream</p>
+        </hgroup>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <article class="stat-card">
+                <div class="stat-val" id="status">🟢</div>
+                <small>Status</small>
+            </article>
+            <article class="stat-card">
+                <div class="stat-val" id="count">-</div>
+                <small>Buffered Events</small>
+            </article>
+        </div>
+
+        <article>
+            <header><strong>Actions</strong></header>
+            <p>Manually flush all buffered events to Markdown files.</p>
+            <button onclick="flush()" id="flushBtn">Flush Now</button>
+        </article>
+
+        <article>
+            <header><strong>Projects</strong></header>
+            <div id="projects">Loading...</div>
+        </article>
+    </main>
+
+    <script>
+        const API = '/v1';
+        
+        // Polling loop
+        async function refresh() {
+            try {
+                // Since we don't have a GET /events endpoint that returns count, usage of internal state would require API change.
+                // For now, we only know if server is up based on fetching this page.
+                // Let's implement a quick check if flush is possible?
+                // Actually the API doesn't expose stats yet. 
+                // Updating UI to reflect "Online"
+                document.getElementById('status').innerText = '🟢';
+                document.getElementById('count').innerText = '?'; // Placeholder until API support
+                document.getElementById('projects').innerText = 'Check notebooklm_output/ folder';
+            } catch (e) {
+                document.getElementById('status').innerText = '🔴';
+            }
+        }
+
+        async function flush() {
+            const btn = document.getElementById('flushBtn');
+            btn.setAttribute('aria-busy', 'true');
+            try {
+                const res = await fetch(API + '/flush', { method: 'POST' });
+                const data = await res.json();
+                alert('Flushed: ' + (data.flushedProjects.join(', ') || 'No new events'));
+            } catch (e) {
+                alert('Error flushing: ' + e.message);
+            } finally {
+                btn.setAttribute('aria-busy', 'false');
+            }
+        }
+        
+        refresh();
+    </script>
+</body>
+</html>

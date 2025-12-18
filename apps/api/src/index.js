@@ -7,6 +7,9 @@ const PORT = process.env.PORT || 8787;
 // Directory where NotebookLM will watch for per-project markdown files
 const OUT = process.env.OUT_DIR || 'notebooklm_output';
 
+import { linear } from './adapters/linear.js';
+const adapters = { linear };
+
 // ensure output directory exists on startup
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -65,6 +68,44 @@ http.createServer((req, res) => {
     });
     return;
   }
+
+  // Webhook handler
+  if (req.method === 'POST' && req.url.startsWith('/v1/webhooks/')) {
+    const source = req.url.split('/').pop();
+    const adapter = adapters[source];
+    if (!adapter) {
+      res.writeHead(400).end(JSON.stringify({ error: 'Unknown source' }));
+      return;
+    }
+
+    let b = '';
+    req.on('data', c => b += c);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(b);
+        const event = adapter(payload);
+
+        if (event) {
+          // Enrich with standard fields if missing
+          if (!event.timestamp) event.timestamp = Date.now();
+          if (!event.projectId) event.projectId = process.env.DEFAULT_PROJECT_ID || 'linear-import'; // Webhooks often don't have project mapping logic yet
+          if (!event.userId) event.userId = 'webhook';
+
+          // Allow webhook to override project if present in payload (advanced)
+          // For now, simple default
+
+          events.push(event);
+          console.log(`Captured webhook from ${source}`);
+        }
+        res.writeHead(200).end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        console.error(err);
+        res.writeHead(400).end(JSON.stringify({ error: 'Invalid Webhook Payload' }));
+      }
+    });
+    return;
+  }
+
   if (req.method === 'POST' && req.url === '/v1/flush') {
     // group events by projectId
     const grouped = {};
@@ -96,5 +137,33 @@ http.createServer((req, res) => {
     res.end(JSON.stringify({ flushedProjects }));
     return;
   }
+  // Serve static files from public/
+  if (req.method === 'GET') {
+    let filePath = path.join(process.cwd(), 'apps', 'api', 'public', req.url === '/' ? 'index.html' : req.url);
+    const extname = path.extname(filePath);
+    let contentType = 'text/html';
+    switch (extname) {
+      case '.js': contentType = 'text/javascript'; break;
+      case '.css': contentType = 'text/css'; break;
+      case '.json': contentType = 'application/json'; break;
+    }
+
+    fs.readFile(filePath, (err, content) => {
+      if (err) {
+        if (err.code == 'ENOENT') {
+          res.writeHead(404);
+          res.end('Not found');
+        } else {
+          res.writeHead(500);
+          res.end('Server Error: ' + err.code);
+        }
+      } else {
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(content, 'utf-8');
+      }
+    });
+    return;
+  }
+
   res.writeHead(404).end();
 }).listen(PORT, '0.0.0.0', () => console.log('API on', PORT));

@@ -1,0 +1,16 @@
+{
+    "name": "notebooklm-sync-cli",
+    "version": "1.0.0",
+    "description": "CLI for NotebookLM Sync",
+    "main": "index.js",
+    "bin": {
+        "nls": "./index.js"
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "node-fetch": "^3.3.2"
+    }
+}

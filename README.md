@@ -68,6 +68,25 @@ cp connectors/git/hooks/post-commit .git/hooks/
 chmod +x .git/hooks/post-commit
 ```
 
+**💻 CLI Tool (`nls`)**
+```bash
+# Install locally
+cd apps/cli && npm link
+
+# Usage
+echo "data" | nls capture
+nls note "Refactoring auth..."
+nls flush
+```
+
+**📊 Dashboard**
+Access the local dashboard at **http://localhost:8787** to view status and flush events manually.
+
+**🔌 Webhooks (Linear)**
+Configure your Linear webhook to point to your server (e.g. via ngrok or localhost):
+`POST /v1/webhooks/linear`
+*Captures Issue Created and Updated events.*
+
 **📝 VS Code Extension**
 1. Navigate to `apps/vscode-extension`.
 2. Run `npm install` and press `F5` to debug (or package it).
